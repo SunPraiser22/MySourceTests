@@ -25,6 +25,9 @@ BEGIN_RECV_TABLE_NOBASE( C_HL2PlayerLocalData, DT_HL2Local )
 	RecvPropBool( RECVINFO(m_bDisplayReticle) ),
 	RecvPropBool( RECVINFO(m_bStickyAutoAim) ),
 	RecvPropBool( RECVINFO(m_bAutoAimTarget) ),
+	// Sebby
+	RecvPropInt( RECVINFO( m_iBatteries ) ),
+	// Sebby
 #ifdef HL2_EPISODIC
 	RecvPropFloat( RECVINFO(m_flFlashBattery) ),
 	RecvPropVector( RECVINFO(m_vecLocatorOrigin) ),
@@ -44,6 +47,9 @@ C_HL2PlayerLocalData::C_HL2PlayerLocalData()
 	m_fSquadInFollowMode = false;
 	m_bWeaponLowered = false;
 	m_hLadder = NULL;
+	// Sebby
+	m_iBatteries = 0;
+	// Sebby
 #ifdef HL2_EPISODIC
 	m_flFlashBattery = 0.0f;
 	m_vecLocatorOrigin = vec3_origin;

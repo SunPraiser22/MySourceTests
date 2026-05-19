@@ -395,7 +395,47 @@ CHL2_Player::CHL2_Player()
 
 	m_flArmorReductionTime = 0.0f;
 	m_iArmorReductionFrom = 0;
+
+	// Sebby
+	m_HL2Local.m_iBatteries = 0;
+	Msg("HL2_Player: player is cast\n");
+	// Sebby
 }
+
+// Sebby
+bool CHL2_Player::GiveFlashlightBattery(int nAmount)
+{
+	if (nAmount <= 0)
+		return false;
+
+	// Cap at MAX_SPARE_BATTERIES
+	int iHave = m_HL2Local.m_iBatteries;
+	if (iHave >= MAX_SPARE_BATTERIES)
+		return false;
+
+	int iNew = iHave + nAmount;
+	if (iNew > MAX_SPARE_BATTERIES)
+		iNew = MAX_SPARE_BATTERIES;
+
+	m_HL2Local.m_iBatteries = iNew;
+
+	// Play pickup sound locally for this player
+	CPASAttenuationFilter filter(this, "ItemBattery.Touch");
+	EmitSound(filter, entindex(), "ItemBattery.Touch");
+
+	// Let client know we picked up an item (for the pickup flash)
+	CSingleUserRecipientFilter user(this);
+	user.MakeReliable();
+
+	UserMessageBegin(user, "ItemPickup");
+	WRITE_STRING("item_battery");
+	MessageEnd();
+
+	DevMsg("HL2_Player: spare batteries = %d\n", m_HL2Local.m_iBatteries);
+
+	return true;
+}
+// Sebby
 
 //
 // SUIT POWER DEVICES
@@ -1116,7 +1156,7 @@ void CHL2_Player::Spawn(void)
 #endif
 
 	BaseClass::Spawn();
-
+	
 	//
 	// Our player movement speed is set once here. This will override the cl_xxxx
 	// cvars unless they are set to be lower than this.
@@ -1816,21 +1856,42 @@ void CHL2_Player::SuitPower_Update( void )
 
 		if( !SuitPower_Drain( flPowerLoad * gpGlobals->frametime ) )
 		{
-			// TURN OFF ALL DEVICES!!
-			if( IsSprinting() )
+			// Sebby
+			// If we have spare batteries, automatically consume one to restore suit power.
+			if (m_HL2Local.m_iBatteries > 0)
 			{
-				StopSprinting();
-			}
+				// Consume one spare battery and refill suit power
+				m_HL2Local.m_iBatteries--;
+				m_HL2Local.m_flSuitPower = 100.0f;
 
-			if ( Flashlight_UseLegacyVersion() )
+				// Play an insertion/consume sound
+				CPASAttenuationFilter filter(this, "ItemBattery.Touch");
+				EmitSound(filter, entindex(), "ItemBattery.Touch");
+
+				// Fire an output that flashlight turned on with full power value if needed
+				variant_t flashlighton;
+				flashlighton.SetFloat(m_HL2Local.m_flSuitPower / 100.0f);
+				FirePlayerProxyOutput("OnFlashlightOn", flashlighton, this, this);
+			}
+			else
 			{
-				if( FlashlightIsOn() )
+				// TURN OFF ALL DEVICES!!
+				if (IsSprinting())
 				{
+					StopSprinting();
+				}
+
+				if (Flashlight_UseLegacyVersion())
+				{
+					if (FlashlightIsOn())
+					{
 #ifndef HL2MP
-					FlashlightTurnOff();
+						FlashlightTurnOff();
 #endif
+					}
 				}
 			}
+			// Sebby
 		}
 
 		if ( Flashlight_UseLegacyVersion() )

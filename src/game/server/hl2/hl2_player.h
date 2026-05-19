@@ -142,6 +142,12 @@ public:
 	// Apply a battery
 	bool ApplyBattery( float powerMultiplier = 1.0 );
 
+	// Sebby
+	bool GiveFlashlightBattery( int nAmount = 1 );
+
+	static const int MAX_SPARE_BATTERIES = 5;
+	// Sebby
+
 	// Commander Mode for controller NPCs
 	enum CommanderCommand_t
 	{

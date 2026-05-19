@@ -46,6 +46,10 @@ public:
 	Vector	m_vecLocatorOrigin;
 #endif
 
+	// Sebby
+	int		m_iBatteries;
+	// Sebby
+
 	// Ladder related data
 	EHANDLE			m_hLadder;
 	LadderMove_t	m_LadderMove;

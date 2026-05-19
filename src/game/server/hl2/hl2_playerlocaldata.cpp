@@ -44,6 +44,7 @@ BEGIN_SIMPLE_DATADESC( CHL2PlayerLocalData )
 	DEFINE_FIELD( m_bWeaponLowered, FIELD_BOOLEAN ),
 	DEFINE_FIELD( m_bDisplayReticle, FIELD_BOOLEAN ),
 	DEFINE_FIELD( m_bStickyAutoAim, FIELD_BOOLEAN ),
+	DEFINE_FIELD( m_iBatteries, FIELD_INTEGER ),
 #ifdef HL2_EPISODIC
 	DEFINE_FIELD( m_flFlashBattery, FIELD_FLOAT ),
 	DEFINE_FIELD( m_vecLocatorOrigin, FIELD_POSITION_VECTOR ),
@@ -62,6 +63,7 @@ CHL2PlayerLocalData::CHL2PlayerLocalData()
 	m_hLadder.Set(NULL);
 	m_vecAutoAimPoint.GetForModify().Init();
 	m_bDisplayReticle = false;
+	m_iBatteries = 0;
 #ifdef HL2_EPISODIC
 	m_flFlashBattery = 0.0f;
 #endif
